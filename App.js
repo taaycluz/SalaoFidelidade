@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { FontAwesome5 } from '@expo/vector-icons'; 
+import { supabase } from './supabaseClient'; // Importa a conexão do banco
 
 export default function App() {
-  // O MAESTRO: Esta variável decide qual tela exibir ('login' ou 'registro')
+  // --- 1. ESTADOS GLOBAIS E DE INTERFACE (Sempre no topo) ---
   const [telaAtual, setTelaAtual] = useState('login');
-
-  // Estados globais (para quando o usuário digitar)
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [nome, setNome] = useState('');
@@ -18,7 +17,20 @@ export default function App() {
   const [exibirConfirmar, setExibirConfirmar] = useState(false);
   const [foco, setFoco] = useState('');
 
-  // --- COMPONENTE: TELA DE LOGIN ---
+  // --- 2. TESTE DE CONEXÃO COM O SUPABASE ---
+  useEffect(() => {
+    async function testarConexao() {
+      const { data, error } = await supabase.from('usuarios').select('*').limit(1);
+      if (error) {
+        console.log("❌ Erro ao conectar no Supabase:", error.message);
+      } else {
+        console.log("⚡ Conexão com o Supabase estabelecida com sucesso!");
+      }
+    }
+    testarConexao();
+  }, []);
+
+  // --- 3. COMPONENTE: TELA DE LOGIN ---
   const LoginScreen = () => (
     <View style={styles.innerContainer}>
       <Logo />
@@ -55,7 +67,7 @@ export default function App() {
     </View>
   );
 
-  // --- COMPONENTE: TELA DE REGISTRO ---
+  // --- 4. COMPONENTE: TELA DE REGISTRO ---
   const RegisterScreen = () => (
     <View style={styles.innerContainer}>
       <Logo />
@@ -100,7 +112,7 @@ export default function App() {
     </View>
   );
 
-  // Renderização do App
+  // --- 5. RENDERIZAÇÃO DO MAESTRO ---
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {telaAtual === 'login' ? <LoginScreen /> : <RegisterScreen />}
@@ -108,7 +120,7 @@ export default function App() {
   );
 }
 
-// --- COMPONENTES AUXILIARES (Para o código ficar limpo) ---
+// --- 6. COMPONENTES AUXILIARES (Design e Reuso) ---
 const Logo = () => (
   <View style={styles.logoContainer}>
     <FontAwesome5 name="crown" size={50} color="#D4AF37" />
@@ -129,7 +141,7 @@ const BotaoDourado = ({ texto }) => (
   </TouchableOpacity>
 );
 
-// --- ESTILOS ---
+// --- 7. ESTILOS VISUAIS PREMIUM ---
 const styles = StyleSheet.create({
   container: { flexGrow: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center', paddingVertical: 50 },
   innerContainer: { width: '100%', alignItems: 'center', paddingHorizontal: 30 },
@@ -139,7 +151,6 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 32, color: '#D4AF37', letterSpacing: 5, fontWeight: '300', textAlign: 'center' },
   subtitulo: { fontSize: 10, color: '#D4AF37', letterSpacing: 3, marginBottom: 40, opacity: 0.6, textAlign: 'center' },
   formulario: { width: '100%' },
-  inputGroup: { marginBottom: 20 },
   label: { color: '#D4AF37', fontSize: 10, letterSpacing: 1.5, marginBottom: 5, fontWeight: '700', opacity: 0.4 },
   labelFocado: { opacity: 1 },
   input: { borderBottomWidth: 1, borderBottomColor: '#D4AF3733', color: '#fff', paddingVertical: 8, fontSize: 15 },

@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// O processo lê automaticamente as variáveis configuradas no ficheiro .env
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// Puxa as credenciais direto do seu arquivo .env que você acabou de ajustar
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Cria o cliente de conexão
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
