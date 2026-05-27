@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { COLORS } from '../constants/colors';
 
 export default function BotaoDourado({ texto, onPress }) {
   return (
@@ -13,6 +14,6 @@ export default function BotaoDourado({ texto, onPress }) {
 
 const styles = StyleSheet.create({
   botaoTouch: { marginTop: 25 },
-  botaoSimulado: { backgroundColor: '#D4AF37', paddingVertical: 16, borderRadius: 4, alignItems: 'center' },
-  botaoTexto: { color: '#000', fontSize: 15, fontWeight: 'bold', letterSpacing: 2 },
+  botaoSimulado: { backgroundColor: COLORS.primary, paddingVertical: 16, borderRadius: 4, alignItems: 'center' },
+  botaoTexto: { color: COLORS.background, fontSize: 15, fontWeight: 'bold', letterSpacing: 2 },
 });
