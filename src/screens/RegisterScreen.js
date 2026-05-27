@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import { supabase } from '../services/supabaseClient'; 
+import bcrypt from 'bcryptjs'; // 👈 Tem que ser exatamente "bcrypt" em minúsculo
 
 // Importando nossos componentes limpos! 👑
 import { Logo, InputLabel, BotaoDourado } from '../components';
@@ -15,32 +16,43 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }) {
   const [exibirSenha, setExibirSenha] = useState(false);
   const [foco, setFoco] = useState('');
 
-  const lidarComCadastro = async () => {
-    if (!nome || !email || !senha || !confirmarSenha) {
-      alert("Por favor, preencha todos os campos!");
-      return;
-    }
+ const lidarComCadastro = async () => {
+  if (!nome || !email || !senha || !confirmarSenha) {
+    alert("Por favor, preencha todos os campos!");
+    return;
+  }
 
-    if (senha !== confirmarSenha) {
-      alert("As senhas não coincidem!");
-      return;
-    }
+  if (senha !== confirmarSenha) {
+    alert("As senhas não coincidem!");
+    return;
+  }
 
-    try {
-      const { error } = await supabase
-        .from('usuarios')
-        .insert([{ nome, email, senha }]);
+  try {
+    // 1. Gerar o Salt (fator de custo 10 é o padrão seguro de mercado)
+    const salt = bcrypt.genSaltSync(10);
 
-      if (error) throw error;
+    // 2. Transformar a senha limpa em Hash criptografado
+    const senhaCriptografada = bcrypt.hashSync(senha, salt);
 
-      alert("👑 Conta criada com sucesso! Seja bem-vindo ao Club.");
-      aoConcluirCadastro(); 
+    // 3. Enviar para o Supabase (enviando a senha já protegida!)
+    const { error } = await supabase
+      .from('usuarios')
+      .insert([{ 
+        nome, 
+        email: email.trim().toLowerCase(), 
+        senha: senhaCriptografada // 👈 Adeus texto limpo!
+      }]);
 
-    } catch (error) {
-      console.log("❌ Erro ao cadastrar:", error.message);
-      alert("Erro ao criar conta: " + error.message);
-    }
-  };
+    if (error) throw error;
+
+    alert("👑 Conta criada com segurança! Seja bem-vindo ao Club.");
+    aoConcluirCadastro(); 
+
+  } catch (error) {
+    console.log("❌ Erro ao cadastrar:", error.message);
+    alert("Erro ao criar conta: " + error.message);
+  }
+};
 
   return (
     <View style={styles.innerContainer}>

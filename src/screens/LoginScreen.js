@@ -4,6 +4,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient'; // Conexão com o banco
 import { Logo, InputLabel, BotaoDourado } from '../components';
 import { COLORS } from '../constants/colors';
+import bcrypt from 'bcryptjs';
 
 export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }) {
   const [email, setEmail] = useState('');
@@ -11,33 +12,32 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }) {
   const [exibirSenha, setExibirSenha] = useState(false);
   const [foco, setFoco] = useState('');
 
-  // Lógica simples de validação de Login
+  // Lógica segura de validação de Login 🔒
   const lidarComLogin = async () => {
-    // 1. Validação básica de campos vazios
     if (!email || !senha) {
       alert("Por favor, preencha todos os campos!");
       return;
     }
 
     try {
-      // 2. Busca o usuário no Supabase filtrando pelo e-mail
+      // 1. Busca o usuário pelo e-mail (forçando minúsculo e sem espaços)
       const { data, error } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('email', email.trim().toLowerCase()) // Limpa espaços e força minúsculo
-        .single(); // Traz apenas um único objeto em vez de uma lista
+        .eq('email', email.trim().toLowerCase())
+        .single();
 
-      // 3. Se der erro ou não encontrar o e-mail
+      // 2. Defesa contra enumeração de e-mails
       if (error || !data) {
         alert("E-mail ou senha incorretos!");
         return;
       }
 
-      // 4. Comparação simples de senha (Modo Didático/Texto Limpo)
-      if (data.senha === senha) {
+      // 3. Comparação Segura usando Bcrypt!
+      const senhaEstavalida = bcrypt.compareSync(senha, data.senha);
+
+      if (senhaEstavalida) {
         alert(`👑 Bem-vindo de volta, ${data.nome}!`);
-        
-        // Executa a função que avisa o App.js que o usuário passou!
         if (aoLogarComSucesso) {
           aoLogarComSucesso(data); 
         }
@@ -89,7 +89,7 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }) {
       </View>
     </View>
   );
-}
+} // 👈 Essa chave de fechamento do componente estava faltando!
 
 const styles = StyleSheet.create({
   innerContainer: { width: '100%', alignItems: 'center', paddingHorizontal: 30 },
