@@ -1,0 +1,108 @@
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../constants/colors';
+
+export const authFormStyles = StyleSheet.create({
+  gradientBg: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titulo: {
+    fontSize: 36,
+    color: COLORS.text,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  subtitulo: {
+    fontSize: 13,
+    color: COLORS.textLight || '#A0A0A0',
+    letterSpacing: 1,
+    marginBottom: 32,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  formularioContainer: {
+    width: '100%',
+    maxWidth: 450,
+    marginBottom: 40,
+  },
+  formulario: {
+    backgroundColor: COLORS.surface || '#111111',
+    borderRadius: 24,
+    padding: 28,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  input: {
+    borderWidth: 1.5,
+    borderColor: COLORS.border || '#222222',
+    borderRadius: 14,
+    color: COLORS.text,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    fontSize: 15,
+    marginBottom: 20,
+    backgroundColor: COLORS.background,
+    fontWeight: '500',
+  },
+  inputFocado: {
+    borderColor: COLORS.primary,
+    borderWidth: 2.5,
+    backgroundColor: COLORS.primaryLight + '15',
+  },
+  senhaContainer: {
+    flexDirection: 'row',
+    borderWidth: 1.5,
+    borderColor: COLORS.border || '#222222',
+    borderRadius: 14,
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 18,
+    backgroundColor: COLORS.background,
+  },
+  inputSenha: {
+    flex: 1,
+    color: COLORS.text,
+    paddingVertical: 14,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  linkBotao: {
+    marginTop: 24,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  linkTexto: {
+    color: COLORS.textLight || '#A0A0A0',
+    fontSize: 12,
+    letterSpacing: 0.5,
+    fontWeight: '500',
+  },
+  linkTextoDestaque: {
+    color: COLORS.primary,
+    fontWeight: '700',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 20,
+  },
+  decorationDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.primary,
+    opacity: 0.3,
+  },
+});
