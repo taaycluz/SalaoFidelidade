@@ -1,104 +1,63 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text, View } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 
-/** Novo logo premium com design sofisticado */
-const Logo: React.FC = () => {
+export default function Logo() {
   return (
     <View style={styles.container}>
-      {/* Card com Gradiente */}
-      <LinearGradient
-        colors={[COLORS.primaryLight, COLORS.primary]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradientCard}
-      >
-        <View style={styles.cardInner}>
-          <View style={styles.dotContainer}>
-            <View style={[styles.dot, styles.dotTop]} />
-            <View style={[styles.dot, styles.dotMiddle]} />
-            <View style={[styles.dot, styles.dotBottom]} />
-          </View>
-          
-          <Text style={styles.brandText}>SALÃO</Text>
-          <Text style={styles.brandText}>FIDELIDADE</Text>
-        </View>
-      </LinearGradient>
-
-      {/* Decoração */}
-      <View style={styles.decorationContainer}>
-        <View style={[styles.decorBall, { backgroundColor: COLORS.secondary }]} />
-        <View style={[styles.decorBall, { backgroundColor: COLORS.accent }]} />
-        <View style={[styles.decorBall, { backgroundColor: COLORS.accentWarm }]} />
+      {/* Ícone de Coroa Premium Universal */}
+      <View style={styles.iconeCirculo}>
+        <FontAwesome5 name="crown" size={32} color={COLORS.primary} />
       </View>
+      
+      {/* Novo Nome Agnóstico (Para qualquer nicho) */}
+      <Text style={styles.textoLogo}>
+        LOYAL<Text style={styles.textoDestaque}>CLUB</Text>
+      </Text>
+      
+      {/* Subtítulo Sofisticado */}
+      <Text style={styles.subtexto}>PROGRAMA DE FIDELIDADE</Text>
     </View>
   );
-};
-
-export default Logo;
+}
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginBottom: 40,
-    marginTop: 20,
-  },
-  gradientCard: {
-    width: 240,
-    height: 140,
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 12,
     justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  iconeCirculo: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: '#FFFFFF', // Mantém o fundo branco para destacar no gradiente
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 14,
   },
-  cardInner: {
-    alignItems: 'center',
-    width: '100%',
+  textoLogo: {
+    fontSize: 24,
+    fontWeight: '300',
+    color: COLORS.primaryDark || '#000000', // Usa sua cor principal escura
+    letterSpacing: 6,
   },
-  dotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 80,
-    marginBottom: 12,
+  textoDestaque: {
+    fontWeight: '800',
+    color: COLORS.primary, // Destaque na cor principal do seu app
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FFFFFF',
-    opacity: 0.8,
-  },
-  dotTop: {
-    marginBottom: 4,
-  },
-  dotMiddle: {
-    marginBottom: 4,
-  },
-  dotBottom: {},
-  brandText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 2,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  decorationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: 180,
-    marginTop: 24,
-  },
-  decorBall: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    opacity: 0.6,
+  subtexto: {
+    fontSize: 9,
+    color: COLORS.placeholder || '#8E8E93',
+    letterSpacing: 3,
+    marginTop: 6,
+    fontWeight: '600',
   },
 });

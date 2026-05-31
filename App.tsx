@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, Text } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native'; // ✅ Adicionado TouchableOpacity aqui!
 import { supabase } from './src/services/supabaseClient'; 
 import { COLORS } from './src/constants/colors';
 
-import RegisterScreen from './src/screens/RegisterScreen'; 
-import LoginScreen from './src/screens/Login/LoginScreen'; 
+import LoginScreen from './src/screens/Login/LoginScreen';
+import RegisterScreen from './src/screens/Register/RegisterScreen';
 
 export default function App() {
-  const [telaAtual, setTelaAtual] = useState('login'); // Pode começar no login agora!
-  const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [telaAtual, setTelaAtual] = useState('login'); 
+  const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
 
   useEffect(() => {
     async function testarConexao() {
@@ -31,11 +31,10 @@ export default function App() {
           irParaCadastro={() => setTelaAtual('registro')}   
           aoLogarComSucesso={(usuario) => {
             setUsuarioLogado(usuario);
-            setTelaAtual('home'); // Avança para a tela principal
+            setTelaAtual('home'); 
           }}
         />
       ) : (
-        // Tela temporária de Home para sabermos que o login funcionou
         <View style={{ alignItems: 'center' }}>
           <Text style={{ color: COLORS.primary, fontSize: 24, marginBottom: 10 }}>ÁREA LOGADA 👑</Text>
           <Text style={{ color: '#fff' }}>Olá, {usuarioLogado?.nome}! Você entrou no Club.</Text>

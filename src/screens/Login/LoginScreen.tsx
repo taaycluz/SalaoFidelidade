@@ -2,11 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons'; 
-import { supabase } from '../../services/supabaseClient';
-import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../../components';
 import { COLORS } from '../../constants/colors';
-import { authFormStyles as styles } from '../../styles/authForm.styles'; 
 import { Usuario } from '../../types/usuario';
+import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../../components';
+import { authFormStyles as styles } from '../../styles/authForm.styles'; 
+import { supabase } from '../../services/supabaseClient';
 import bcrypt from 'bcryptjs';
 
 interface LoginScreenProps {

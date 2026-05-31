@@ -2,10 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons'; 
-import { supabase } from '../services/supabaseClient'; 
-import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../components';
-import { COLORS } from '../constants/colors';
-import { authFormStyles as styles } from '../styles/authForm.styles'; 
+import { COLORS } from '../../constants/colors'; // ✅ Corrigido o caminho relativo!
+import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../../components';
+import { authFormStyles as styles } from '../../styles/authForm.styles'; 
+import { supabase } from '../../services/supabaseClient';
 import bcrypt from 'bcryptjs';
 
 interface RegisterScreenProps {
@@ -165,8 +165,7 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
               />
             </View>
 
-            {/* 🛠️ Corrigido para texto="..." e adicionado estado de loading */}
-            <BotaoDourado texto="CRIAR CONTA" onPress={lidarComCadastro}  carregando={carregando}/>
+            <BotaoDourado texto="CRIAR CONTA" onPress={lidarComCadastro} carregando={carregando}/>
 
             <TouchableOpacity 
               style={styles.linkBotao} 
