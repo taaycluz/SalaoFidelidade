@@ -4,7 +4,7 @@ import { supabase } from './src/services/supabaseClient';
 import { COLORS } from './src/constants/colors';
 
 import RegisterScreen from './src/screens/RegisterScreen'; 
-import LoginScreen from './src/screens/LoginScreen'; 
+import LoginScreen from './src/screens/Login/LoginScreen'; 
 
 export default function App() {
   const [telaAtual, setTelaAtual] = useState('login'); // Pode começar no login agora!

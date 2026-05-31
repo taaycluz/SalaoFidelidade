@@ -2,11 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons'; 
-import { supabase } from '../services/supabaseClient';
-import { Logo, InputLabel, BotaoDourado } from '../components';
-import { COLORS } from '../constants/colors';
-import { authFormStyles as styles } from '../styles/authForm.styles'; // Reutilizando base estável
-import { Usuario } from '../types/usuario';
+import { supabase } from '../../services/supabaseClient';
+import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../../components';
+import { COLORS } from '../../constants/colors';
+import { authFormStyles as styles } from '../../styles/authForm.styles'; 
+import { Usuario } from '../../types/usuario';
 import bcrypt from 'bcryptjs';
 
 interface LoginScreenProps {
@@ -18,17 +18,27 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }: Login
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [exibirSenha, setExibirSenha] = useState(false);
-  const [foco, setFoco] = useState<'email' | 'senha' | null>(null); // Tipagem estrita de foco
+  const [foco, setFoco] = useState<'email' | 'senha' | null>(null); 
+  const [carregando, setCarregando] = useState(false);
+  
+  const [alerta, setAlerta] = useState<{ visivel: boolean; mensagem: string }>({
+    visivel: false,
+    mensagem: '',
+  });
 
-  // Helper computado para performance de renderização de estilos de foco
+  const exibirAlerta = (msg: string) => setAlerta({ visivel: true, mensagem: msg });
+  const fecharAlerta = () => setAlerta(prev => ({ ...prev, visivel: false }));
+
   const inputEstiloEmail = useMemo(() => [styles.input, foco === 'email' && styles.inputFocado], [foco]);
   const senhaContainerEstilo = useMemo(() => [styles.senhaContainer, foco === 'senha' && styles.inputFocado], [foco]);
 
   const lidarComLogin = async () => {
     if (!email.trim() || !senha) {
-      alert("Por favor, preencha todos os campos!");
+      exibirAlerta("Por favor, preencha todos os campos!");
       return;
     }
+
+    setCarregando(true); 
 
     try {
       const { data, error } = await supabase
@@ -38,27 +48,34 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }: Login
         .single();
 
       if (error || !data) {
-        alert("E-mail ou senha incorretos!");
+        exibirAlerta("E-mail ou senha incorretos!");
         return;
       }
 
       const senhaEstaValida = bcrypt.compareSync(senha, data.senha);
 
       if (senhaEstaValida) {
-        alert(`👑 Bem-vinda de volta, ${data.nome}!`);
-        aoLogarComSucesso({
-          id: data.id,
-          nome: data.nome,
-          email: data.email
-        }); 
+        exibirAlerta(`👑 Bem-vinda de volta, ${data.nome}!`);
+        
+        setTimeout(() => {
+          fecharAlerta();
+          aoLogarComSucesso({
+            id: data.id,
+            nome: data.nome,
+            email: data.email
+          });
+        }, 1500);
+        return; 
       } else {
-        alert("E-mail ou senha incorretos!");
+        exibirAlerta("E-mail ou senha incorretos!");
       }
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error("❌ Erro no processo de login:", errorMessage);
-      alert("Ocorreu um erro ao tentar fazer login.");
+      exibirAlerta("Ocorreu um erro ao tentar fazer login.");
+    } finally {
+      setCarregando(false); 
     }
   };
 
@@ -88,6 +105,7 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }: Login
               onBlur={() => setFoco(null)}
               autoCapitalize="none"
               keyboardType="email-address"
+              editable={!carregando}
             />
 
             <InputLabel label="SENHA" focado={foco === 'senha'} />
@@ -102,15 +120,26 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }: Login
                 onFocus={() => setFoco('senha')} 
                 onBlur={() => setFoco(null)}
                 autoCapitalize="none"
+                editable={!carregando}
               />
-              <TouchableOpacity onPress={() => setExibirSenha(prev => !prev)} activeOpacity={0.7}>
+              <TouchableOpacity 
+                onPress={() => setExibirSenha(prev => !prev)} 
+                activeOpacity={0.7}
+                disabled={carregando}
+              >
                 <FontAwesome5 name={exibirSenha ? "eye" : "eye-slash"} size={18} color={COLORS.primary} />
               </TouchableOpacity>
             </View>
 
-            <BotaoDourado texto="ENTRAR" onPress={lidarComLogin} />
+            {/* 🛠️ Corrigido de text="..." para texto="..." */}
+            <BotaoDourado texto="ENTRAR" onPress={lidarComLogin} carregando={carregando} />
 
-            <TouchableOpacity style={styles.linkBotao} onPress={irParaCadastro} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.linkBotao} 
+              onPress={irParaCadastro} 
+              activeOpacity={0.7}
+              disabled={carregando}
+            >
               <Text style={styles.linkTexto}>Não tem uma conta? <Text style={styles.linkTextoDestaque}>Registre-se</Text></Text>
             </TouchableOpacity>
           </View>
@@ -122,6 +151,12 @@ export default function LoginScreen({ irParaCadastro, aoLogarComSucesso }: Login
           <View style={styles.decorationDot} />
         </View>
       </ScrollView>
+
+      <CustomAlert 
+        visivel={alerta.visivel} 
+        mensagem={alerta.mensagem} 
+        aoFechar={fecharAlerta} 
+      />
     </LinearGradient>
   );
 }

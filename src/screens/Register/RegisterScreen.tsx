@@ -3,9 +3,9 @@ import { Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import { supabase } from '../services/supabaseClient'; 
-import { Logo, InputLabel, BotaoDourado } from '../components';
+import { Logo, InputLabel, BotaoDourado, CustomAlert } from '../components';
 import { COLORS } from '../constants/colors';
-import { authFormStyles as styles } from '../styles/authForm.styles'; // Reutilizando mesma base limpa
+import { authFormStyles as styles } from '../styles/authForm.styles'; 
 import bcrypt from 'bcryptjs';
 
 interface RegisterScreenProps {
@@ -22,8 +22,24 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [exibirSenha, setExibirSenha] = useState(false);
   const [foco, setFoco] = useState<CamposFoco>(null);
+  const [carregando, setCarregando] = useState(false);
 
-  // Performance helpers para desatolar processamento de renderizações JSX
+  const [alerta, setAlerta] = useState<{ visivel: boolean; mensagem: string; acaoAoFechar?: () => void }>({
+    visivel: false,
+    mensagem: '',
+  });
+
+  const exibirAlerta = (msg: string, acao?: () => void) => {
+    setAlerta({ visivel: true, mensagem: msg, acaoAoFechar: acao });
+  };
+
+  const fecharAlerta = () => {
+    if (alerta.acaoAoFechar) {
+      alerta.acaoAoFechar();
+    }
+    setAlerta(prev => ({ ...prev, visivel: false }));
+  };
+
   const inputEstiloNome = useMemo(() => [styles.input, foco === 'nome' && styles.inputFocado], [foco]);
   const inputEstiloEmail = useMemo(() => [styles.input, foco === 'email' && styles.inputFocado], [foco]);
   const senhaContainerEstilo = useMemo(() => [styles.senhaContainer, foco === 'senha' && styles.inputFocado], [foco]);
@@ -31,14 +47,16 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
 
   const lidarComCadastro = async () => {
     if (!nome.trim() || !email.trim() || !senha || !confirmarSenha) {
-      alert("Por favor, preencha todos os campos!");
+      exibirAlerta("Por favor, preencha todos os campos!");
       return;
     }
 
     if (senha !== confirmarSenha) {
-      alert("As senhas não coincidem!");
+      exibirAlerta("As senhas não coincidem!");
       return;
     }
+
+    setCarregando(true); 
 
     try {
       const salt = bcrypt.genSaltSync(10);
@@ -54,13 +72,16 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
 
       if (error) throw error;
 
-      alert("👑 Conta criada com segurança! Seja bem-vinda ao Club.");
-      aoConcluirCadastro(); 
+      exibirAlerta("👑 Conta criada com segurança! Seja bem-vinda ao Club.", () => {
+        aoConcluirCadastro();
+      });
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error("❌ Erro ao cadastrar:", errorMessage);
-      alert("Erro ao criar conta: " + errorMessage);
+      exibirAlerta("Erro ao criar conta: " + errorMessage);
+    } finally {
+      setCarregando(false); 
     }
   };
 
@@ -88,6 +109,7 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
               onChangeText={setNome}
               onFocus={() => setFoco('nome')} 
               onBlur={() => setFoco(null)}
+              editable={!carregando} 
             />
 
             <InputLabel label="E-MAIL" focado={foco === 'email'} />
@@ -101,6 +123,7 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
               onBlur={() => setFoco(null)}
               autoCapitalize="none"
               keyboardType="email-address"
+              editable={!carregando} 
             />
 
             <InputLabel label="SENHA" focado={foco === 'senha'} />
@@ -115,8 +138,13 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
                 onFocus={() => setFoco('senha')} 
                 onBlur={() => setFoco(null)}
                 autoCapitalize="none"
+                editable={!carregando} 
               />
-              <TouchableOpacity onPress={() => setExibirSenha(prev => !prev)} activeOpacity={0.7}>
+              <TouchableOpacity 
+                onPress={() => setExibirSenha(prev => !prev)} 
+                activeOpacity={0.7}
+                disabled={carregando}
+              >
                 <FontAwesome5 name={exibirSenha ? "eye" : "eye-slash"} size={18} color={COLORS.primary} />
               </TouchableOpacity>
             </View>
@@ -133,17 +161,30 @@ export default function RegisterScreen({ aoConcluirCadastro, irParaLogin }: Regi
                 onFocus={() => setFoco('confirmar')} 
                 onBlur={() => setFoco(null)}
                 autoCapitalize="none"
+                editable={!carregando} 
               />
             </View>
 
-            <BotaoDourado texto="CRIAR CONTA" onPress={lidarComCadastro} />
+            {/* 🛠️ Corrigido para texto="..." e adicionado estado de loading */}
+            <BotaoDourado texto="CRIAR CONTA" onPress={lidarComCadastro}  carregando={carregando}/>
 
-            <TouchableOpacity style={styles.linkBotao} onPress={irParaLogin} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.linkBotao} 
+              onPress={irParaLogin} 
+              activeOpacity={0.7}
+              disabled={carregando} 
+            >
               <Text style={styles.linkTexto}>Já tem uma conta? <Text style={styles.linkTextoDestaque}>Entre aqui</Text></Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+
+      <CustomAlert 
+        visivel={alerta.visivel} 
+        mensagem={alerta.mensagem} 
+        aoFechar={fecharAlerta} 
+      />
     </LinearGradient>
   );
 }
